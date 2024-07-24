@@ -1,0 +1,23 @@
+---
+- name: Init dconf
+  ansible.builtin.include_tasks:
+    file: _init.yml
+
+- name: Copy desktop-background to host
+  become: true
+  ansible.builtin.copy:
+    src: '{{ desktop_background }}'
+    dest: /usr/share/backgrounds/{{ desktop_background | basename }}
+    mode: '0644'
+    owner: '{{ customize_user }}'
+
+- name: Set desktop-background
+  become: true
+  become_user: '{{ customize_user }}'
+  ansible.builtin.shell: |
+    dbus-launch dconf load /org/mate/desktop/ << EOF 
+    [background]
+    picture-filename='/usr/share/backgrounds/{{ desktop_background | basename }}'
+    EOF
+  environment:
+    DISPLAY: ':0'
