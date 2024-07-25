@@ -3,6 +3,14 @@
   ansible.builtin.include_tasks:
     file: _init.yml
 
+- name: Ensure destination exists
+  become: true
+  ansible.builtin.file:
+    path: /usr/share/backgrounds
+    state: directory
+    recurse: true
+    mode: '0766'
+
 - name: Copy desktop-background to host
   become: true
   ansible.builtin.copy:
